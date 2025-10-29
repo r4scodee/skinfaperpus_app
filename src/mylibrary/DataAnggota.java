@@ -1,11 +1,52 @@
 package mylibrary;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import javax.swing.table.DefaultTableModel;
+import connection.koneksi;
+import javax.swing.JOptionPane;
+import java.sql.PreparedStatement;
+
 public class DataAnggota extends javax.swing.JFrame {
 
 
     public DataAnggota() {
         initComponents();
+        ShowData();
     }
+    
+    void ShowData() {
+    DefaultTableModel model = new DefaultTableModel();
+    model.addColumn("NIS");
+    model.addColumn("Nama");
+    model.addColumn("Kelas");
+    model.addColumn("Kompetensi");
+    model.addColumn("Jenis Kelamin");
+    model.addColumn("Alamat");
+
+    try {
+        Connection conn = connection.koneksi.getConnection();
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM tb_anggota");
+
+        while (rs.next()) {
+            model.addRow(new Object[]{
+                rs.getString("nis"),
+                rs.getString("nama_siswa"),
+                rs.getString("kelas"),
+                rs.getString("kompetensi"),
+                rs.getString("jenis_kelamin"),
+                rs.getString("alamat_lengkap")
+            });
+        }
+
+        tbl_data_anggota.setModel(model); // pastikan ini nama JTable kamu
+    } catch (Exception e) {
+        System.out.println("Error tampil data: " + e.getMessage());
+    }
+}
+
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -80,6 +121,11 @@ public class DataAnggota extends javax.swing.JFrame {
             public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
             }
         });
+        tbl_data_anggota.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tbl_data_anggotaMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tbl_data_anggota);
         if (tbl_data_anggota.getColumnModel().getColumnCount() > 0) {
             tbl_data_anggota.getColumnModel().getColumn(0).setResizable(false);
@@ -144,6 +190,10 @@ public class DataAnggota extends javax.swing.JFrame {
     
     private void btn_input_dataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_input_dataActionPerformed
         // TODO add your handling code here:
+        FormAnggota formAnggota = new FormAnggota();
+        formAnggota.setVisible(true);
+        formAnggota.setLocationRelativeTo(null);
+        this.dispose();
     }//GEN-LAST:event_btn_input_dataActionPerformed
 
     private void btn_exitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_exitActionPerformed
@@ -166,8 +216,38 @@ public class DataAnggota extends javax.swing.JFrame {
     }//GEN-LAST:event_txt_cari_bukuActionPerformed
 
     private void btn_data_hapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_data_hapusActionPerformed
-        // TODO add your handling code here:
+        // TODO add your handling code here:                                          
+        int baris = tbl_data_anggota.getSelectedRow(); 
+
+        if (baris == -1) {
+            JOptionPane.showMessageDialog(this, "Pilih data dulu yang mau dihapus!");
+            return;
+        }
+
+        String nis = tbl_data_anggota.getValueAt(baris, 0).toString();
+        int konfirmasi = JOptionPane.showConfirmDialog(this, 
+            "Yakin mau hapus data dengan NIS: " + nis + " ?", 
+            "Konfirmasi", JOptionPane.YES_NO_OPTION);
+
+        if (konfirmasi == JOptionPane.YES_OPTION) {
+            try {
+                Connection conn = connection.koneksi.getConnection();
+                String sql = "DELETE FROM tb_anggota WHERE nis = ?";
+                PreparedStatement pst = conn.prepareStatement(sql);
+                pst.setString(1, nis);
+                pst.executeUpdate();
+
+                JOptionPane.showMessageDialog(this, "Data berhasil dihapus!");
+                ShowData(); 
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Gagal hapus data: " + e.getMessage());
+           }
+        }
     }//GEN-LAST:event_btn_data_hapusActionPerformed
+
+    private void tbl_data_anggotaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbl_data_anggotaMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tbl_data_anggotaMouseClicked
 
     /**
      * @param args the command line arguments

@@ -6,14 +6,21 @@ package mylibrary;
 
 /**
  *
- * @author Software-19
+ * @author Irbadh
  */
-public class FormDataFixed extends javax.swing.JFrame {
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import connection.koneksi;
+
+
+public class FormAnggota extends javax.swing.JFrame {
 
     /**
      * Creates new form FormMemberData
      */
-    public FormDataFixed() {
+    public FormAnggota() {
         initComponents();
     }
 
@@ -31,9 +38,9 @@ public class FormDataFixed extends javax.swing.JFrame {
         buttonGroup2 = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        txt_nama = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
         txt_nis = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        txt_nama = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         btn_submit = new javax.swing.JButton();
@@ -72,28 +79,28 @@ public class FormDataFixed extends javax.swing.JFrame {
         jLabel1.setText("Form Data Anggota");
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 590, 70));
 
-        txt_nama.setForeground(new java.awt.Color(102, 102, 102));
-        txt_nama.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_namaActionPerformed(evt);
-            }
-        });
-        jPanel1.add(txt_nama, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 100, 240, -1));
-
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel2.setText("Nama");
-        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, -1, -1));
-
         txt_nis.setForeground(new java.awt.Color(102, 102, 102));
         txt_nis.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txt_nisActionPerformed(evt);
             }
         });
-        jPanel1.add(txt_nis, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 150, 240, -1));
+        jPanel1.add(txt_nis, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 100, 240, -1));
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel2.setText("Nis");
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, -1, -1));
+
+        txt_nama.setForeground(new java.awt.Color(102, 102, 102));
+        txt_nama.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_namaActionPerformed(evt);
+            }
+        });
+        jPanel1.add(txt_nama, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 150, 240, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel3.setText("Nis");
+        jLabel3.setText("Nama");
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 130, -1, -1));
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -152,7 +159,7 @@ public class FormDataFixed extends javax.swing.JFrame {
         });
         jPanel1.add(var_male, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 150, -1, -1));
 
-        cmb_kelas.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-- Pilih Kelas --", "X", "Sebelas", "12" }));
+        cmb_kelas.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-- Pilih Kelas --", "X", "XI", "XII" }));
         cmb_kelas.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cmb_kelasItemStateChanged(evt);
@@ -170,7 +177,7 @@ public class FormDataFixed extends javax.swing.JFrame {
         });
         jPanel1.add(cmb_kelas, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 200, 240, -1));
 
-        cmb_kompetensi.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-- Pilih Kompetensi --", "Rekayasa Perangkat Lunak", "Desain Komunikasi Visual", "Teknik Komputer Jaringan" }));
+        cmb_kompetensi.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-- Pilih Kompetensi --", "RPL", "DKV", "TKJ" }));
         jPanel1.add(cmb_kompetensi, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 100, 240, -1));
 
         btn_lihat_data.setBackground(new java.awt.Color(255, 204, 0));
@@ -249,46 +256,59 @@ public class FormDataFixed extends javax.swing.JFrame {
 
     private void btn_submitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_submitActionPerformed
         // TODO add your handling code here:
-        String nama;
-        String nis;
-        String kelas;
-        String kompetensi;
-        String jk;
-        String alamat;
+        try {
+        Connection conn = koneksi.getConnection();
+        String sql = "INSERT INTO tb_anggota (nis, nama_siswa, jenis_kelamin, kelas, kompetensi, alamat_lengkap) VALUES (?, ?, ?, ?, ?, ?)";
+        PreparedStatement pst = conn.prepareStatement(sql);
 
-        nama = txt_nama.getText();
-        nis = txt_nis.getText();
-        kelas = cmb_kelas.getSelectedItem().toString();
-        kompetensi = cmb_kompetensi.getSelectedItem().toString();
-        alamat = txt_alamat.getText();
+        // ambil nilai dari inputan
+        pst.setString(1, txt_nis.getText());
+        pst.setString(2, txt_nama.getText());
 
-        if(var_male.isSelected()){
+        // logika radio button
+        String jk = "";
+        if (var_male.isSelected()) {
             jk = "L";
-        }else{
+        } else if (var_female.isSelected()) {
             jk = "P";
         }
+        pst.setString(3, jk);
 
-        txt_nama.setText("");
+        pst.setString(4, cmb_kelas.getSelectedItem().toString());
+        pst.setString(5, cmb_kompetensi.getSelectedItem().toString());
+        pst.setString(6, txt_alamat.getText());
+
+        pst.executeUpdate();
+        javax.swing.JOptionPane.showMessageDialog(this, "BOOMM!! Data berhasil disimpan nih!");
+
+        // bersihkan form setelah simpan
         txt_nis.setText("");
-        cmb_kelas.setSelectedItem(0);
-        cmb_kompetensi.setSelectedItem(0);
+        txt_nama.setText("");
+        var_male.setSelected(false);
+        var_female.setSelected(false);
+        cmb_kelas.setSelectedIndex(0);
+        cmb_kompetensi.setSelectedIndex(0);
         txt_alamat.setText("");
-        buttonGroup1.clearSelection();
+        
+        txt_nis.requestFocus();
 
-        txt_nama.requestFocus();
+        } catch (SQLException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "YAHH:) Gagal nyimpen datanya bro: " + e.getMessage());
+        }
+
     }//GEN-LAST:event_btn_submitActionPerformed
-
-    private void txt_nisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_nisActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txt_nisActionPerformed
 
     private void txt_namaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_namaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txt_namaActionPerformed
 
+    private void txt_nisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_nisActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_nisActionPerformed
+
     private void clear(){
-        txt_nama.setText("");
         txt_nis.setText("");
+        txt_nama.setText("");
         cmb_kelas.setSelectedItem(0);
         cmb_kompetensi.setSelectedItem(0);
         txt_alamat.setText("");
@@ -312,20 +332,22 @@ public class FormDataFixed extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FormDataFixed.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FormAnggota.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FormDataFixed.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FormAnggota.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FormDataFixed.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FormAnggota.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FormDataFixed.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FormAnggota.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-            new FormDataFixed().setVisible(true);
+            new FormAnggota().setVisible(true);
         });
     }
 

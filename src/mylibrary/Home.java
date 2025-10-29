@@ -237,7 +237,7 @@ public class Home extends javax.swing.JFrame {
 
     private void form_anggota_dashActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_form_anggota_dashActionPerformed
         // TODO add your handling code here:
-        FormDataFixed formAnggota = new FormDataFixed();
+        FormAnggota formAnggota = new FormAnggota();
         formAnggota.setVisible(true);
         formAnggota.setLocationRelativeTo(null);
     }//GEN-LAST:event_form_anggota_dashActionPerformed

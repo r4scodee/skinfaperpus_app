@@ -8,6 +8,11 @@ package mylibrary;
  *
  * @author Software-19
  */
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import javax.swing.JOptionPane;
+
 public class FormUpdateAnggota extends javax.swing.JFrame {
 
     /**
