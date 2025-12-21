@@ -14,7 +14,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import connection.koneksi;
 
-
 public class FormAnggota extends javax.swing.JFrame {
 
     /**
@@ -259,29 +258,26 @@ public class FormAnggota extends javax.swing.JFrame {
         try {
         Connection conn = koneksi.getConnection();
         String sql = "INSERT INTO tb_anggota (nis, nama_siswa, jenis_kelamin, kelas, kompetensi, alamat_lengkap) VALUES (?, ?, ?, ?, ?, ?)";
-        PreparedStatement pst = conn.prepareStatement(sql);
+        PreparedStatement pre = conn.prepareStatement(sql);
 
-        // ambil nilai dari inputan
-        pst.setString(1, txt_nis.getText());
-        pst.setString(2, txt_nama.getText());
+        pre.setString(1, txt_nis.getText());
+        pre.setString(2, txt_nama.getText());
 
-        // logika radio button
         String jk = "";
         if (var_male.isSelected()) {
             jk = "L";
         } else if (var_female.isSelected()) {
             jk = "P";
         }
-        pst.setString(3, jk);
+        pre.setString(3, jk);
 
-        pst.setString(4, cmb_kelas.getSelectedItem().toString());
-        pst.setString(5, cmb_kompetensi.getSelectedItem().toString());
-        pst.setString(6, txt_alamat.getText());
+        pre.setString(4, cmb_kelas.getSelectedItem().toString());
+        pre.setString(5, cmb_kompetensi.getSelectedItem().toString());
+        pre.setString(6, txt_alamat.getText());
 
-        pst.executeUpdate();
+        pre.executeUpdate();
         javax.swing.JOptionPane.showMessageDialog(this, "BOOMM!! Data berhasil disimpan nih!");
 
-        // bersihkan form setelah simpan
         txt_nis.setText("");
         txt_nama.setText("");
         var_male.setSelected(false);
@@ -295,7 +291,6 @@ public class FormAnggota extends javax.swing.JFrame {
         } catch (SQLException e) {
             javax.swing.JOptionPane.showMessageDialog(this, "YAHH:) Gagal nyimpen datanya bro: " + e.getMessage());
         }
-
     }//GEN-LAST:event_btn_submitActionPerformed
 
     private void txt_namaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_namaActionPerformed

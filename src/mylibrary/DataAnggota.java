@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import javax.swing.table.DefaultTableModel;
-import connection.koneksi;
 import javax.swing.JOptionPane;
 import java.sql.PreparedStatement;
 
@@ -16,36 +15,68 @@ public class DataAnggota extends javax.swing.JFrame {
         ShowData();
     }
     
-    void ShowData() {
-    DefaultTableModel model = new DefaultTableModel();
-    model.addColumn("NIS");
-    model.addColumn("Nama");
-    model.addColumn("Kelas");
-    model.addColumn("Kompetensi");
-    model.addColumn("Jenis Kelamin");
-    model.addColumn("Alamat");
+    private void SearchData() {
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("NIS");
+        model.addColumn("Nama");
+        model.addColumn("Kelas");
+        model.addColumn("Kompetensi");
+        model.addColumn("Jenis Kelamin");
+        model.addColumn("Alamat");
 
-    try {
-        Connection conn = connection.koneksi.getConnection();
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM tb_anggota");
+        try {
+            String search = txt_cari_anggota.getText();
+            Connection conn = connection.koneksi.getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM tb_anggota where nama_siswa like '%"+search+"%' ");
 
-        while (rs.next()) {
-            model.addRow(new Object[]{
-                rs.getString("nis"),
-                rs.getString("nama_siswa"),
-                rs.getString("kelas"),
-                rs.getString("kompetensi"),
-                rs.getString("jenis_kelamin"),
-                rs.getString("alamat_lengkap")
-            });
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getString("nis"),
+                    rs.getString("nama_siswa"),
+                    rs.getString("kelas"),
+                    rs.getString("kompetensi"),
+                    rs.getString("jenis_kelamin"),
+                    rs.getString("alamat_lengkap")
+                });
+            }
+            
+            tbl_data_anggota.setModel(model);
+        } catch (Exception e) {
+            System.out.println("Error tampil data: " + e.getMessage());
         }
-
-        tbl_data_anggota.setModel(model); // pastikan ini nama JTable kamu
-    } catch (Exception e) {
-        System.out.println("Error tampil data: " + e.getMessage());
     }
-}
+    
+    private void ShowData() {
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("NIS");
+        model.addColumn("Nama");
+        model.addColumn("Kelas");
+        model.addColumn("Kompetensi");
+        model.addColumn("Jenis Kelamin");
+        model.addColumn("Alamat");
+
+        try {
+            Connection conn = connection.koneksi.getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM tb_anggota");
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getString("nis"),
+                    rs.getString("nama_siswa"),
+                    rs.getString("kelas"),
+                    rs.getString("kompetensi"),
+                    rs.getString("jenis_kelamin"),
+                    rs.getString("alamat_lengkap")
+                });
+            }
+            
+            tbl_data_anggota.setModel(model);
+        } catch (Exception e) {
+            System.out.println("Error tampil data: " + e.getMessage());
+        }
+    }
 
 
     @SuppressWarnings("unchecked")
@@ -60,7 +91,8 @@ public class DataAnggota extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tbl_data_anggota = new javax.swing.JTable();
         btn_edit_data = new javax.swing.JButton();
-        txt_cari_buku = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        txt_cari_anggota = new javax.swing.JTextField();
         btn_data_hapus = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -121,18 +153,12 @@ public class DataAnggota extends javax.swing.JFrame {
             public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
             }
         });
-        tbl_data_anggota.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tbl_data_anggotaMouseClicked(evt);
-            }
-        });
         jScrollPane1.setViewportView(tbl_data_anggota);
         if (tbl_data_anggota.getColumnModel().getColumnCount() > 0) {
-            tbl_data_anggota.getColumnModel().getColumn(0).setResizable(false);
             tbl_data_anggota.getColumnModel().getColumn(1).setResizable(false);
             tbl_data_anggota.getColumnModel().getColumn(2).setResizable(false);
             tbl_data_anggota.getColumnModel().getColumn(3).setResizable(false);
-            tbl_data_anggota.getColumnModel().getColumn(4).setResizable(false);
+            tbl_data_anggota.getColumnModel().getColumn(4).setMaxWidth(50);
             tbl_data_anggota.getColumnModel().getColumn(5).setResizable(false);
         }
 
@@ -151,13 +177,21 @@ public class DataAnggota extends javax.swing.JFrame {
         });
         jPanel1.add(btn_edit_data, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 520, 90, 30));
 
-        txt_cari_buku.setText("🔍  Cari Data ");
-        txt_cari_buku.addActionListener(new java.awt.event.ActionListener() {
+        jLabel2.setText("🔍");
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 520, 20, 30));
+
+        txt_cari_anggota.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        txt_cari_anggota.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_cari_bukuActionPerformed(evt);
+                txt_cari_anggotaActionPerformed(evt);
             }
         });
-        jPanel1.add(txt_cari_buku, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 520, 200, 30));
+        txt_cari_anggota.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txt_cari_anggotaKeyReleased(evt);
+            }
+        });
+        jPanel1.add(txt_cari_anggota, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 520, 200, 30));
 
         btn_data_hapus.setBackground(new java.awt.Color(255, 102, 102));
         btn_data_hapus.setForeground(new java.awt.Color(255, 255, 255));
@@ -211,9 +245,9 @@ public class DataAnggota extends javax.swing.JFrame {
         upadateAnggota.setLocationRelativeTo(null);
     }//GEN-LAST:event_btn_edit_dataActionPerformed
 
-    private void txt_cari_bukuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_cari_bukuActionPerformed
+    private void txt_cari_anggotaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_cari_anggotaActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txt_cari_bukuActionPerformed
+    }//GEN-LAST:event_txt_cari_anggotaActionPerformed
 
     private void btn_data_hapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_data_hapusActionPerformed
         // TODO add your handling code here:                                          
@@ -225,11 +259,6 @@ public class DataAnggota extends javax.swing.JFrame {
         }
 
         String nis = tbl_data_anggota.getValueAt(baris, 0).toString();
-        int konfirmasi = JOptionPane.showConfirmDialog(this, 
-            "Yakin mau hapus data dengan NIS: " + nis + " ?", 
-            "Konfirmasi", JOptionPane.YES_NO_OPTION);
-
-        if (konfirmasi == JOptionPane.YES_OPTION) {
             try {
                 Connection conn = connection.koneksi.getConnection();
                 String sql = "DELETE FROM tb_anggota WHERE nis = ?";
@@ -242,12 +271,18 @@ public class DataAnggota extends javax.swing.JFrame {
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Gagal hapus data: " + e.getMessage());
            }
-        }
     }//GEN-LAST:event_btn_data_hapusActionPerformed
 
-    private void tbl_data_anggotaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbl_data_anggotaMouseClicked
+    private void txt_cari_anggotaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_cari_anggotaKeyReleased
         // TODO add your handling code here:
-    }//GEN-LAST:event_tbl_data_anggotaMouseClicked
+        String search = txt_cari_anggota.getText();
+        
+        if(search != "") {
+            SearchData();
+        } else {
+            ShowData();
+        }
+    }//GEN-LAST:event_txt_cari_anggotaKeyReleased
 
     /**
      * @param args the command line arguments
@@ -303,9 +338,10 @@ public class DataAnggota extends javax.swing.JFrame {
     private javax.swing.JButton btn_input_data;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tbl_data_anggota;
-    private javax.swing.JTextField txt_cari_buku;
+    private javax.swing.JTextField txt_cari_anggota;
     // End of variables declaration//GEN-END:variables
 }

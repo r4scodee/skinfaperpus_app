@@ -73,7 +73,7 @@ public class FormUpdateAnggota extends javax.swing.JFrame {
 
         jLabel1.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 24)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Form Data Anggota");
+        jLabel1.setText("Form Ubah Data Anggota");
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 590, 70));
 
         txt_nama.setForeground(new java.awt.Color(102, 102, 102));
@@ -128,7 +128,7 @@ public class FormUpdateAnggota extends javax.swing.JFrame {
                 btn_backActionPerformed(evt);
             }
         });
-        jPanel1.add(btn_back, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 240, 80, 30));
+        jPanel1.add(btn_back, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 240, 80, 30));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel5.setText("Kompetensi");
@@ -179,7 +179,7 @@ public class FormUpdateAnggota extends javax.swing.JFrame {
 
         btn_edit1.setBackground(new java.awt.Color(255, 204, 0));
         btn_edit1.setForeground(new java.awt.Color(255, 255, 255));
-        btn_edit1.setText("Hapus");
+        btn_edit1.setText("Lihat Data");
         btn_edit1.setAutoscrolls(true);
         btn_edit1.setBorderPainted(false);
         btn_edit1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -188,7 +188,7 @@ public class FormUpdateAnggota extends javax.swing.JFrame {
                 btn_edit1ActionPerformed(evt);
             }
         });
-        jPanel1.add(btn_edit1, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 240, 70, 30));
+        jPanel1.add(btn_edit1, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 240, 90, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
