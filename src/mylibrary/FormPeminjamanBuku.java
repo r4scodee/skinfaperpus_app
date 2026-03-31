@@ -8,6 +8,11 @@ package mylibrary;
  *
  * @author Software-19
  */
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import connection.koneksi;
+
 public class FormPeminjamanBuku extends javax.swing.JFrame {
 
     /**
@@ -42,7 +47,7 @@ public class FormPeminjamanBuku extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         btn_lihat_data = new javax.swing.JButton();
         txt_penulis = new javax.swing.JTextField();
-        txt_thn1 = new javax.swing.JTextField();
+        txt_thn_terbit = new javax.swing.JTextField();
         cmb_kategori = new javax.swing.JComboBox<>();
         btn_edit1 = new javax.swing.JButton();
 
@@ -101,7 +106,7 @@ public class FormPeminjamanBuku extends javax.swing.JFrame {
 
         btn_back.setBackground(new java.awt.Color(153, 153, 153));
         btn_back.setForeground(new java.awt.Color(255, 255, 255));
-        btn_back.setText("Close");
+        btn_back.setText("Kembali");
         btn_back.setAutoscrolls(true);
         btn_back.setBorderPainted(false);
         btn_back.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -138,7 +143,7 @@ public class FormPeminjamanBuku extends javax.swing.JFrame {
         });
         jPanel1.add(btn_lihat_data, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 230, 90, 30));
         jPanel1.add(txt_penulis, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 190, 250, -1));
-        jPanel1.add(txt_thn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 140, 260, -1));
+        jPanel1.add(txt_thn_terbit, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 140, 260, -1));
 
         cmb_kategori.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-- Pilih kategori Buku --", "Pendidikan", "Komik", "Novel", "Pertanian", "Pemrograman", "Ekonomi", "Sejarah" }));
         jPanel1.add(cmb_kategori, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 190, 260, -1));
@@ -183,7 +188,7 @@ public class FormPeminjamanBuku extends javax.swing.JFrame {
         txt_judul.setText("");
         txt_penulis.setText("");
         cmb_kategori.getSelectedItem().toString();
-        txt_thn1.setText("");
+        txt_thn_terbit.setText("");
         txt_penerbit.setText("");
         buttonGroup1.clearSelection();
         
@@ -191,34 +196,39 @@ public class FormPeminjamanBuku extends javax.swing.JFrame {
     
     private void btn_submitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_submitActionPerformed
         // TODO add your handling code here:
-        String kode;
-        String judul;
-        String penulis;
-        String penerbit;
-        String tahun;
-        String kategori;
-        
-        kode = txt_kode.getText();
-        judul = txt_judul.getText();
-        penulis = txt_penulis.getText();
-        penerbit = txt_penerbit.getText();
-        tahun = txt_thn1.getText();
-        kategori = cmb_kategori.getSelectedItem().toString();
-        
+        try {
+        Connection conn = koneksi.getConnection();
+        String sql = "INSERT INTO tb_buku (kode_buku, judul_buku, penulis, penerbit, tahun_terbit, kategori) VALUES (?, ?, ?, ?, ?, ?)";
+        PreparedStatement pre = conn.prepareStatement(sql);
+
+        pre.setString(1, txt_kode.getText());
+        pre.setString(2, txt_judul.getText());
+        pre.setString(3, txt_penulis.getText());
+        pre.setString(4, txt_penerbit.getText());
+        pre.setString(5, txt_thn_terbit.getText());
+        pre.setString(6, cmb_kategori.getSelectedItem().toString());
+
+        pre.executeUpdate();
+        javax.swing.JOptionPane.showMessageDialog(this, "BOOMM!! Data berhasil disimpan nih!");
+
         txt_kode.setText("");
         txt_judul.setText("");
         txt_penulis.setText("");
         txt_penerbit.setText("");
-        txt_thn1.setText("");
-        cmb_kategori.setSelectedItem(0);
-        buttonGroup1.clearSelection();
+        txt_thn_terbit.setText("");
+        cmb_kategori.setSelectedIndex(0);
         
         txt_kode.requestFocus();
+
+        } catch (SQLException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "YAHH:) Gagal nyimpen datanya bro: " + e.getMessage());
+        }
     }//GEN-LAST:event_btn_submitActionPerformed
 
     private void btn_backActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_backActionPerformed
         // TODO add your handling code here:
         clear();
+        this.dispose();
         
     }//GEN-LAST:event_btn_backActionPerformed
 
@@ -227,6 +237,7 @@ public class FormPeminjamanBuku extends javax.swing.JFrame {
         DataBuku dataBuku = new DataBuku();
         dataBuku.setVisible(true);
         dataBuku.setLocationRelativeTo(null);
+        this.dispose();
     }//GEN-LAST:event_btn_lihat_dataActionPerformed
 
     private void btn_edit1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_edit1ActionPerformed
@@ -288,6 +299,6 @@ public class FormPeminjamanBuku extends javax.swing.JFrame {
     private javax.swing.JTextField txt_kode;
     private javax.swing.JTextField txt_penerbit;
     private javax.swing.JTextField txt_penulis;
-    private javax.swing.JTextField txt_thn1;
+    private javax.swing.JTextField txt_thn_terbit;
     // End of variables declaration//GEN-END:variables
 }

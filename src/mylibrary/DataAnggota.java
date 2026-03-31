@@ -240,9 +240,24 @@ public class DataAnggota extends javax.swing.JFrame {
 
     private void btn_edit_dataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_edit_dataActionPerformed
         // TODO add your handling code here:
-        FormUpdateAnggota upadateAnggota = new FormUpdateAnggota();
-        upadateAnggota.setVisible(true);
-        upadateAnggota.setLocationRelativeTo(null);
+        int baris = tbl_data_anggota.getSelectedRow();
+        if (baris != -1) {
+            // Ambil data dari kolom tabel
+            String nis = tbl_data_anggota.getValueAt(baris, 0).toString();
+            String nama = tbl_data_anggota.getValueAt(baris, 1).toString();
+            String kelas = tbl_data_anggota.getValueAt(baris, 2).toString();
+            String kompetensi = tbl_data_anggota.getValueAt(baris, 3).toString();
+            String jk = tbl_data_anggota.getValueAt(baris, 4).toString();
+            String alamat = tbl_data_anggota.getValueAt(baris, 5).toString();
+
+            // Panggil constructor berparameter
+            FormUpdateAnggota update = new FormUpdateAnggota(nis, nama, kelas, kompetensi, jk, alamat);
+            update.setVisible(true);
+            update.setLocationRelativeTo(null);
+            this.dispose(); 
+        } else {
+            JOptionPane.showMessageDialog(this, "Pilih data di tabel lebih dulu!");
+        }
     }//GEN-LAST:event_btn_edit_dataActionPerformed
 
     private void txt_cari_anggotaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_cari_anggotaActionPerformed

@@ -279,8 +279,8 @@
               <StringArray count="4">
                 <StringItem index="0" value="-- Pilih Kelas --"/>
                 <StringItem index="1" value="X"/>
-                <StringItem index="2" value="Sebelas"/>
-                <StringItem index="3" value="12"/>
+                <StringItem index="2" value="XI"/>
+                <StringItem index="3" value="XII"/>
               </StringArray>
             </Property>
           </Properties>

@@ -1,10 +1,81 @@
 package mylibrary;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JOptionPane;
+import java.sql.PreparedStatement;
+
 public class DataBuku extends javax.swing.JFrame {
 
 
     public DataBuku() {
         initComponents();
+        ShowData();
+    }
+    
+    private void SearchData() {
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("Kode Buku");
+        model.addColumn("Judul Buku");
+        model.addColumn("Penulis");
+        model.addColumn("Penerbit");
+        model.addColumn("Tahun Terbit");
+        model.addColumn("Kategori");
+
+        try {
+            String search = txt_cari_buku.getText();
+            Connection conn = connection.koneksi.getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM tb_buku where judul_buku like '%"+search+"%' ");
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getString("kode_buku"),
+                    rs.getString("judul_buku"),
+                    rs.getString("penulis"),
+                    rs.getString("penerbit"),
+                    rs.getString("tahun_terbit"),
+                    rs.getString("kategori")
+                });
+            }
+            
+            tbl_data_buku.setModel(model);
+        } catch (Exception e) {
+            System.out.println("Error tampil data: " + e.getMessage());
+        }
+    }
+    
+    private void ShowData() {
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("Kode Buku");
+        model.addColumn("Judul Buku");
+        model.addColumn("Penulis");
+        model.addColumn("Penerbit");
+        model.addColumn("Tahun Terbit");
+        model.addColumn("Kategori");
+
+        try {
+            Connection conn = connection.koneksi.getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM tb_buku");
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getString("kode_buku"),
+                    rs.getString("judul_buku"),
+                    rs.getString("penulis"),
+                    rs.getString("penerbit"),
+                    rs.getString("tahun_terbit"),
+                    rs.getString("kategori")
+                });
+            }
+            
+            tbl_data_buku.setModel(model);
+        } catch (Exception e) {
+            System.out.println("Error tampil data: " + e.getMessage());
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -19,8 +90,9 @@ public class DataBuku extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tbl_data_buku = new javax.swing.JTable();
         btn_edit_data = new javax.swing.JButton();
-        txt_cari_buku = new javax.swing.JTextField();
         btn_data_hapus = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        txt_cari_buku = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -70,7 +142,15 @@ public class DataBuku extends javax.swing.JFrame {
             new String [] {
                 "Kode Buku", "Judul Buku", "Penulis", "Penerbit", "Tahun Terbit", "Kategori"
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Integer.class, java.lang.Object.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
         tbl_data_buku.addAncestorListener(new javax.swing.event.AncestorListener() {
             public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
                 tbl_data_bukuAncestorAdded(evt);
@@ -105,14 +185,6 @@ public class DataBuku extends javax.swing.JFrame {
         });
         jPanel1.add(btn_edit_data, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 520, 90, 30));
 
-        txt_cari_buku.setText("🔍  Cari Data ");
-        txt_cari_buku.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_cari_bukuActionPerformed(evt);
-            }
-        });
-        jPanel1.add(txt_cari_buku, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 520, 200, 30));
-
         btn_data_hapus.setBackground(new java.awt.Color(255, 102, 102));
         btn_data_hapus.setForeground(new java.awt.Color(255, 255, 255));
         btn_data_hapus.setText("Hapus");
@@ -125,6 +197,22 @@ public class DataBuku extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btn_data_hapus, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 520, 90, 30));
+
+        jLabel2.setText("🔍");
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 520, 20, 30));
+
+        txt_cari_buku.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        txt_cari_buku.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_cari_bukuActionPerformed(evt);
+            }
+        });
+        txt_cari_buku.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txt_cari_bukuKeyReleased(evt);
+            }
+        });
+        jPanel1.add(txt_cari_buku, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 520, 200, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -144,10 +232,15 @@ public class DataBuku extends javax.swing.JFrame {
     
     private void btn_input_dataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_input_dataActionPerformed
         // TODO add your handling code here:
+        FormPeminjamanBuku formBuku = new FormPeminjamanBuku();
+        formBuku.setVisible(true);
+        formBuku.setLocationRelativeTo(null);
+        this.dispose();
     }//GEN-LAST:event_btn_input_dataActionPerformed
 
     private void btn_exitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_exitActionPerformed
         // TODO add your handling code here:
+        this.dispose();
     }//GEN-LAST:event_btn_exitActionPerformed
 
     private void tbl_data_bukuAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_tbl_data_bukuAncestorAdded
@@ -156,18 +249,71 @@ public class DataBuku extends javax.swing.JFrame {
 
     private void btn_edit_dataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_edit_dataActionPerformed
         // TODO add your handling code here:
-        FormUpdateBuku updateBuku = new FormUpdateBuku();
-        updateBuku.setVisible(true);
-        updateBuku.setLocationRelativeTo(null);
-    }//GEN-LAST:event_btn_edit_dataActionPerformed
+        int baris = tbl_data_buku.getSelectedRow();
+        if (baris != -1) {
+            // Ambil data dari kolom tabel
+            String kode_buku = tbl_data_buku.getValueAt(baris, 0).toString();
+            String judul_buku = tbl_data_buku.getValueAt(baris, 1).toString();
+            String penulis = tbl_data_buku.getValueAt(baris, 2).toString();
+            String penerbit = tbl_data_buku.getValueAt(baris, 3).toString();
+            String tahun_terbit = tbl_data_buku.getValueAt(baris, 4).toString();
+            String kategori = tbl_data_buku.getValueAt(baris, 5).toString();
 
-    private void txt_cari_bukuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_cari_bukuActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txt_cari_bukuActionPerformed
+            // Panggil constructor berparameter
+            FormUpdateBuku update = new FormUpdateBuku(kode_buku, judul_buku, penulis, penerbit, tahun_terbit, kategori);
+            update.setVisible(true);
+            update.setLocationRelativeTo(null);
+            this.dispose(); 
+        } else {
+            JOptionPane.showMessageDialog(this, "Pilih data di tabel lebih dulu!");
+        }
+    }//GEN-LAST:event_btn_edit_dataActionPerformed
 
     private void btn_data_hapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_data_hapusActionPerformed
         // TODO add your handling code here:
+        int baris = tbl_data_buku.getSelectedRow(); 
+
+        if (baris == -1) {
+            JOptionPane.showMessageDialog(this, "Pilih data dulu yang mau dihapus!");
+            return;
+        }
+
+        String kode_buku = tbl_data_buku.getValueAt(baris, 0).toString();
+            try {
+                Connection conn = connection.koneksi.getConnection();
+                String sql = "DELETE FROM tb_buku WHERE kode_buku = ?";
+                PreparedStatement pst = conn.prepareStatement(sql);
+                pst.setString(1, kode_buku);
+                pst.executeUpdate();
+
+                JOptionPane.showMessageDialog(this, "Data berhasil dihapus!");
+                ShowData(); 
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Gagal hapus data: " + e.getMessage());
+           }
     }//GEN-LAST:event_btn_data_hapusActionPerformed
+
+    private void txt_cari_bukuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_cari_bukuActionPerformed
+        // TODO add your handling code here:
+        String search = txt_cari_buku.getText();
+
+        if (!search.trim().isEmpty()) {
+            SearchData();
+        } else {
+            ShowData();
+        }
+    }//GEN-LAST:event_txt_cari_bukuActionPerformed
+
+    private void txt_cari_bukuKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_cari_bukuKeyReleased
+        // TODO add your handling code here:
+        String search = txt_cari_buku.getText();
+
+        if (!search.trim().isEmpty()) {
+            SearchData();
+        } else {
+            ShowData();
+        }
+    }//GEN-LAST:event_txt_cari_bukuKeyReleased
 
     /**
      * @param args the command line arguments
@@ -215,6 +361,7 @@ public class DataBuku extends javax.swing.JFrame {
     private javax.swing.JButton btn_input_data;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tbl_data_buku;

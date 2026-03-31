@@ -8,15 +8,37 @@ package mylibrary;
  *
  * @author Software-19
  */
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import javax.swing.JOptionPane;
+
 public class FormUpdateBuku extends javax.swing.JFrame {
 
     /**
      * Creates new form FormMemberData
      */
+    
+    String kodeLama;
+    
     public FormUpdateBuku() {
         initComponents();
     }
-
+    
+    public FormUpdateBuku(String kode_buku, String judul_buku, String penulis, String penerbit, String tahun_terbit, String kategori) {
+        initComponents();
+        this.kodeLama = kode_buku; 
+        
+        // Isi komponen form dengan data yang diterima
+        txt_kode.setText(kode_buku);
+        txt_kode.setEditable(false);
+        txt_judul.setText(judul_buku);
+        txt_penulis.setText(penulis);
+        txt_penerbit.setText(penerbit);
+        txt_thn_terbit.setText(tahun_terbit);
+        cmb_kategori.setSelectedItem(kategori);
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -41,7 +63,7 @@ public class FormUpdateBuku extends javax.swing.JFrame {
         txt_penerbit = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         txt_penulis = new javax.swing.JTextField();
-        txt_thn1 = new javax.swing.JTextField();
+        txt_thn_terbit = new javax.swing.JTextField();
         cmb_kategori = new javax.swing.JComboBox<>();
         btn_edit1 = new javax.swing.JButton();
 
@@ -124,7 +146,7 @@ public class FormUpdateBuku extends javax.swing.JFrame {
         jLabel8.setText("Tahun Penerbit");
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 120, 110, -1));
         jPanel1.add(txt_penulis, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 190, 250, -1));
-        jPanel1.add(txt_thn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 140, 260, -1));
+        jPanel1.add(txt_thn_terbit, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 140, 260, -1));
 
         cmb_kategori.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-- Pilih kategori Buku --", "Pendidikan", "Komik", "Novel", "Pertanian", "Pemrograman", "Ekonomi", "Sejarah" }));
         jPanel1.add(cmb_kategori, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 190, 260, -1));
@@ -168,38 +190,53 @@ public class FormUpdateBuku extends javax.swing.JFrame {
         txt_kode.setText("");
         txt_judul.setText("");
         txt_penulis.setText("");
-        cmb_kategori.getSelectedItem().toString();
-        txt_thn1.setText("");
         txt_penerbit.setText("");
-        buttonGroup1.clearSelection();
+        txt_thn_terbit.setText("");
+        cmb_kategori.getSelectedItem().toString();
         
     }
     
     private void btn_submitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_submitActionPerformed
         // TODO add your handling code here:
-        String kode;
-        String judul;
-        String penulis;
-        String penerbit;
-        String tahun;
-        String kategori;
-        
-        kode = txt_kode.getText();
-        judul = txt_judul.getText();
-        penulis = txt_penulis.getText();
-        penerbit = txt_penerbit.getText();
-        tahun = txt_thn1.getText();
-        kategori = cmb_kategori.getSelectedItem().toString();
-        
-        txt_kode.setText("");
-        txt_judul.setText("");
-        txt_penulis.setText("");
-        txt_penerbit.setText("");
-        txt_thn1.setText("");
-        cmb_kategori.setSelectedItem(0);
-        buttonGroup1.clearSelection();
-        
-        txt_kode.requestFocus();
+        String kodeBaru = txt_kode.getText();
+        String judul_buku = txt_judul.getText();
+        String penulis = txt_penulis.getText();
+        String penerbit = txt_penerbit.getText();
+        String tahun_terbit = txt_thn_terbit.getText().trim();
+        String kategori = cmb_kategori.getSelectedItem().toString();
+
+        // Validasi sederhana
+        if (kodeBaru.isEmpty() || judul_buku.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Kode dan Judul tidak boleh kosong!");
+            return;
+        }
+
+        try {
+            Connection conn = connection.koneksi.getConnection();
+            // Query UPDATE berdasarkan nisLama
+            String sql = "UPDATE tb_buku SET kode_buku=?, judul_buku=?, penulis=?, penerbit=?, tahun_terbit=?, kategori=? WHERE kode_buku=?";
+
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, kodeBaru);
+            pst.setString(2, judul_buku);
+            pst.setString(3, penulis);
+            pst.setString(4, penerbit);
+            pst.setString(5, tahun_terbit);
+            pst.setString(6, kategori);
+            pst.setString(7, kodeLama); // Primary key asli
+
+            int hasil = pst.executeUpdate();
+            if (hasil > 0) {
+                JOptionPane.showMessageDialog(this, "Data Berhasil Diperbarui!");
+                // Kembali ke halaman tabel
+                new DataBuku().setVisible(true);
+                this.dispose();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error Update: " + e.getMessage());
+        }   
+
+        txt_judul.requestFocus();
     }//GEN-LAST:event_btn_submitActionPerformed
 
     private void btn_backActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_backActionPerformed
@@ -270,6 +307,6 @@ public class FormUpdateBuku extends javax.swing.JFrame {
     private javax.swing.JTextField txt_kode;
     private javax.swing.JTextField txt_penerbit;
     private javax.swing.JTextField txt_penulis;
-    private javax.swing.JTextField txt_thn1;
+    private javax.swing.JTextField txt_thn_terbit;
     // End of variables declaration//GEN-END:variables
 }

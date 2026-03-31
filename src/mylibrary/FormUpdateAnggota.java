@@ -15,13 +15,32 @@ import javax.swing.JOptionPane;
 
 public class FormUpdateAnggota extends javax.swing.JFrame {
 
-    /**
-     * Creates new form FormMemberData
-     */
+    String nisLama;
+    
     public FormUpdateAnggota() {
         initComponents();
     }
 
+    public FormUpdateAnggota(String nis, String nama, String kelas, String kompetensi, String jk, String alamat) {
+        initComponents();
+        this.nisLama = nis; // Simpan NIS asli
+        
+        // Isi komponen form dengan data yang diterima
+        txt_nis.setText(nis);
+        txt_nis.setEditable(false);
+        txt_nama.setText(nama);
+        cmb_kelas.setSelectedItem(kelas);
+        cmb_kompetensi.setSelectedItem(kompetensi);
+        txt_alamat.setText(alamat);
+        
+        // Logika untuk RadioButton Jenis Kelamin
+        if (jk.equals("L")) {
+            var_male.setSelected(true);
+        } else if (jk.equals("P")) {
+            var_female.setSelected(true);
+        }
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -156,7 +175,7 @@ public class FormUpdateAnggota extends javax.swing.JFrame {
         });
         jPanel1.add(var_male, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 150, -1, -1));
 
-        cmb_kelas.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-- Pilih Kelas --", "X", "Sebelas", "12" }));
+        cmb_kelas.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-- Pilih Kelas --", "X", "XI", "XII" }));
         cmb_kelas.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cmb_kelasItemStateChanged(evt);
@@ -229,31 +248,43 @@ public class FormUpdateAnggota extends javax.swing.JFrame {
 
     private void btn_submitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_submitActionPerformed
         // TODO add your handling code here:
-        String nama;
-        String nis;
-        String kelas;
-        String kompetensi;
-        String jk;
-        String alamat;
+        String nama = txt_nama.getText();
+        String nisBaru = txt_nis.getText();
+        String kelas = cmb_kelas.getSelectedItem().toString();
+        String kompetensi = cmb_kompetensi.getSelectedItem().toString();
+        String alamat = txt_alamat.getText();
+        String jk = var_male.isSelected() ? "L" : "P";
 
-        nama = txt_nama.getText();
-        nis = txt_nis.getText();
-        kelas = cmb_kelas.getSelectedItem().toString();
-        kompetensi = cmb_kompetensi.getSelectedItem().toString();
-        alamat = txt_alamat.getText();
-
-        if(var_male.isSelected()){
-            jk = "L";
-        }else{
-            jk = "P";
+        // Validasi sederhana
+        if (nisBaru.isEmpty() || nama.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "NIS dan Nama tidak boleh kosong!");
+            return;
         }
 
-        txt_nama.setText("");
-        txt_nis.setText("");
-        cmb_kelas.setSelectedItem(0);
-        cmb_kompetensi.setSelectedItem(0);
-        txt_alamat.setText("");
-        buttonGroup1.clearSelection();
+        try {
+            Connection conn = connection.koneksi.getConnection();
+            // Query UPDATE berdasarkan nisLama
+            String sql = "UPDATE tb_anggota SET nis=?, nama_siswa=?, kelas=?, kompetensi=?, jenis_kelamin=?, alamat_lengkap=? WHERE nis=?";
+
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, nisBaru);
+            pst.setString(2, nama);
+            pst.setString(3, kelas);
+            pst.setString(4, kompetensi);
+            pst.setString(5, jk);
+            pst.setString(6, alamat);
+            pst.setString(7, nisLama); // Primary key asli
+
+            int hasil = pst.executeUpdate();
+            if (hasil > 0) {
+                JOptionPane.showMessageDialog(this, "Data Berhasil Diperbarui!");
+                // Kembali ke halaman tabel
+                new DataAnggota().setVisible(true);
+                this.dispose();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error Update: " + e.getMessage());
+        }   
 
         txt_nama.requestFocus();
     }//GEN-LAST:event_btn_submitActionPerformed
